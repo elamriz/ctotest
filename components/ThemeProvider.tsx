@@ -1,73 +1,102 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { colorPalettes, ThemeName } from "@/lib/config";
+import { createContext, useContext, useEffect } from "react";
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+
+type Theme = "dark" | "light" | "cyberpunk" | "neon" | "matrix";
+
+interface ThemeStore {
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+}
+
+export const useThemeStore = create<ThemeStore>()(
+  persist(
+    (set) => ({
+      theme: "cyberpunk",
+      setTheme: (theme) => set({ theme }),
+    }),
+    {
+      name: "theme-storage",
+    }
+  )
+);
+
+interface ThemeProviderProps {
+  children: React.ReactNode;
+}
 
 interface ThemeContextType {
-  theme: ThemeName;
-  setTheme: (theme: ThemeName) => void;
-  currentColors: typeof colorPalettes.darkPurple;
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeName>(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("electrician-theme") as ThemeName;
-      if (stored && colorPalettes[stored]) {
-        return stored;
-      }
+export function ThemeProvider({
+  children,
+  ...props
+}: ThemeProviderProps) {
+  const { theme, setTheme } = useThemeStore();
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    
+    root.classList.remove("light", "dark", "cyberpunk", "neon", "matrix");
+    
+    if (theme === "cyberpunk") {
+      root.classList.add("cyberpunk");
+      root.style.setProperty("--color-primary", "#00ffff");
+      root.style.setProperty("--color-secondary", "#ff00ff");
+      root.style.setProperty("--color-accent", "#ffff00");
+      root.style.setProperty("--color-bg-dark", "#000000");
+      root.style.setProperty("--color-bg-medium", "#0a0a0a");
+      root.style.setProperty("--color-bg-light", "#1a1a1a");
+      root.style.setProperty("--color-text", "#ffffff");
+      root.style.setProperty("--color-text-muted", "#888888");
+    } else if (theme === "neon") {
+      root.classList.add("neon");
+      root.style.setProperty("--color-primary", "#39ff14");
+      root.style.setProperty("--color-secondary", "#00bfff");
+      root.style.setProperty("--color-accent", "#ff1493");
+      root.style.setProperty("--color-bg-dark", "#000000");
+      root.style.setProperty("--color-bg-medium", "#0d1117");
+      root.style.setProperty("--color-bg-light", "#161b22");
+      root.style.setProperty("--color-text", "#f0f6fc");
+      root.style.setProperty("--color-text-muted", "#8b949e");
+    } else if (theme === "matrix") {
+      root.classList.add("matrix");
+      root.style.setProperty("--color-primary", "#00ff41");
+      root.style.setProperty("--color-secondary", "#00ff88");
+      root.style.setProperty("--color-accent", "#88ff00");
+      root.style.setProperty("--color-bg-dark", "#000000");
+      root.style.setProperty("--color-bg-medium", "#001100");
+      root.style.setProperty("--color-bg-light", "#003300");
+      root.style.setProperty("--color-text", "#00ff41");
+      root.style.setProperty("--color-text-muted", "#008800");
+    } else {
+      root.classList.add(theme);
     }
-    return "darkPurple";
-  });
-  const [mounted, setMounted] = useState(false);
+  }, [theme]);
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
-
-    const colors = colorPalettes[theme];
-    document.documentElement.style.setProperty("--color-primary", colors.primary);
-    document.documentElement.style.setProperty("--color-secondary", colors.secondary);
-    document.documentElement.style.setProperty("--color-accent", colors.accent);
-    document.documentElement.style.setProperty("--color-bg-dark", colors.bgDark);
-    document.documentElement.style.setProperty("--color-bg-medium", colors.bgMedium);
-    document.documentElement.style.setProperty("--color-bg-light", colors.bgLight);
-    document.documentElement.style.setProperty("--color-text", colors.text);
-    document.documentElement.style.setProperty("--color-text-muted", colors.textMuted);
-  }, [theme, mounted]);
-
-  const setTheme = (newTheme: ThemeName) => {
-    setThemeState(newTheme);
-    localStorage.setItem("electrician-theme", newTheme);
+  const value = {
+    theme,
+    setTheme,
   };
 
-  if (!mounted) {
-    return <>{children}</>;
-  }
-
   return (
-    <ThemeContext.Provider
-      value={{
-        theme,
-        setTheme,
-        currentColors: colorPalettes[theme],
-      }}
-    >
+    <ThemeContext.Provider {...props} value={value}>
       {children}
     </ThemeContext.Provider>
   );
 }
 
-export function useTheme() {
+export const useTheme = () => {
   const context = useContext(ThemeContext);
-  if (context === undefined) {
+
+  if (context === undefined)
     throw new Error("useTheme must be used within a ThemeProvider");
-  }
+
   return context;
-}
+};
