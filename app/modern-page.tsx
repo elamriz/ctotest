@@ -1,7 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-// New ultra-modern components
+import { motion } from "framer-motion";
+
 const ModernNavigation = dynamic(() => import("@/components/ModernNavigation"), { ssr: false });
 const ModernHero = dynamic(() => import("@/components/ModernHero"), { ssr: false });
 const ModernServices = dynamic(() => import("@/components/ModernServices"), { ssr: true });
@@ -10,9 +11,14 @@ const ModernPortfolio = dynamic(() => import("@/components/ModernPortfolio"), { 
 const ModernTestimonials = dynamic(() => import("@/components/ModernTestimonials"), { ssr: false });
 const ModernFooter = dynamic(() => import("@/components/ModernFooter"), { ssr: true });
 
-export default function HomePage() {
+export default function ModernHomePage() {
   return (
-    <div className="min-h-screen bg-black text-white">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1 }}
+      className="min-h-screen bg-black text-white overflow-x-hidden"
+    >
       <ModernNavigation />
       <main className="relative">
         <ModernHero />
@@ -22,6 +28,6 @@ export default function HomePage() {
         <ModernTestimonials />
       </main>
       <ModernFooter />
-    </div>
+    </motion.div>
   );
 }
