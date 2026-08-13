@@ -6,17 +6,12 @@
     "orientation": "portrait",
     "scheme": "masjidquest",
     "userInterfaceStyle": "light",
-    "icon": "./assets/icon.png",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.elamriz.masjidquest"
     },
     "android": {
-      "package": "com.elamriz.masjidquest",
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive.png",
-        "backgroundColor": "#6847FF"
-      }
+      "package": "com.elamriz.masjidquest"
     },
     "web": {
       "output": "single",
@@ -24,14 +19,7 @@
     },
     "plugins": [
       "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "backgroundColor": "#6847FF",
-          "image": "./assets/icon.png",
-          "imageWidth": 180
-        }
-      ]
+      ["expo-splash-screen", {"backgroundColor": "#6847FF"}]
     ],
     "experiments": {
       "typedRoutes": true
