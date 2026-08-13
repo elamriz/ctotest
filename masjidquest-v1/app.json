@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "MasjidQuest",
+    "slug": "masjidquest",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "masjidquest",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.elamriz.masjidquest"
+    },
+    "android": {
+      "package": "com.elamriz.masjidquest"
+    },
+    "web": {
+      "output": "single",
+      "bundler": "metro"
+    },
+    "plugins": ["expo-router"]
+  }
+}
